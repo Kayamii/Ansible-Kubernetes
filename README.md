@@ -12,7 +12,6 @@
   - [Inventory File](#inventory-file)
 - [Usage](#usage)
 - [Conclusion](#conclusion)
-- [License](#license)
 
 ## Introduction
 This documentation provides a comprehensive guide to setting up a Kubernetes cluster using Ansible. It includes steps for fixing libraries, configuring the controller, and setting up master and worker nodes.
@@ -26,6 +25,7 @@ This documentation provides a comprehensive guide to setting up a Kubernetes clu
 ## Installation Steps
 
 ### Library Fixes
+(if u face one of these errors follow this , else skip to the next part)
 Before beginning the setup, ensure that the necessary libraries are properly configured:
 
 ```bash
@@ -42,6 +42,7 @@ sudo apt-get update
 Update package lists:
 
 ```bash
+sudo apt-add-repository ppa:ansible/ansible
 sudo apt update
 sudo apt install ansible
 ansible --version
@@ -123,5 +124,3 @@ ansible-playbook -i inventory k8s.yml --ask-become-pass
 
 ## Conclusion
 This documentation provides a structured approach to setting up a Kubernetes cluster using Ansible. Follow the steps carefully to ensure a smooth installation process.
-
-## License
