@@ -39,9 +39,10 @@ This documentation provides a comprehensive guide to setting up a Kubernetes clu
 - Ansible installed on the controller node
 - SSH access between the controller and nodes
 - Basic knowledge of YAML and Ansible
-- **Three machines** with the following specifications:
+- **Three machines** with the following specifications(minimum):
   - **2 GB RAM**
   - **2 CPU cores**
+  - **10 GB STORAGE**
   - **Ubuntu Live Server** or any Ubuntu image installed
 - Ensure all machines can communicate with each other:
   - One controller node
