@@ -43,7 +43,6 @@ This documentation provides a comprehensive guide to setting up a Kubernetes clu
 ## Installation Steps
 
 ### Library Fixes
-(if u face one of these errors follow this , else skip to the next part)
 (If you face one of these errors, follow these steps; otherwise, skip to the next part)
 
 ```bash
