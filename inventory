@@ -1,7 +1,6 @@
 [kubernetes]
-192.168.100.97 ansible_ssh_user=master
-192.168.100.98 ansible_ssh_user=worker1
-192.168.100.99 ansible_ssh_user=controller
+192.168.100.97 #@master_ip ansible_ssh_user=master
+192.168.100.98 #@worker_ip ansible_ssh_user=worker1
 
 [masters]
 192.168.100.97 ansible_ssh_user=master
