@@ -13,13 +13,16 @@
 - [Usage](#usage)
 - [Conclusion](#conclusion)
 
+## Repository Structure
 
+```plaintext
 repo/
 ├── inventory
-├── k8s.yml # Script YAML for Kubernetes deployment
-├── k8s_worker_node_connection.j2 # Jinja2 template for worker node connection
+├── k8s.yml                   # Script YAML for Kubernetes deployment
+├── k8s_worker_node_connection.j2  # Jinja2 template for worker node connection
 └── Remote_Files/
-    └── worker_conn_string # Connection string output from the join command
+  └── worker_conn_string    # Connection string output from the join command
+```
 
 ## Introduction
 This documentation provides a comprehensive guide to setting up a Kubernetes cluster using Ansible. It includes steps for fixing libraries, configuring the controller, and setting up master and worker nodes.
