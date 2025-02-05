@@ -16,11 +16,10 @@
 
 repo/
 ├── inventory
-│
 ├── k8s.yml # Script YAML for Kubernetes deployment
 ├── k8s_worker_node_connection.j2 # Jinja2 template for worker node connection
 └── Remote_Files/
-└── worker_conn_string # Connection string output from the join command
+    └── worker_conn_string # Connection string output from the join command
 
 ## Introduction
 This documentation provides a comprehensive guide to setting up a Kubernetes cluster using Ansible. It includes steps for fixing libraries, configuring the controller, and setting up master and worker nodes.
@@ -35,7 +34,7 @@ This documentation provides a comprehensive guide to setting up a Kubernetes clu
 
 ### Library Fixes
 (if u face one of these errors follow this , else skip to the next part)
-Before beginning the setup, ensure that the necessary libraries are properly configured:
+(If you face one of these errors, follow these steps; otherwise, skip to the next part)
 
 ```bash
 sudo rm /var/lib/dpkg/lock-frontend
@@ -85,7 +84,7 @@ sudo systemctl disable ufw
 
 ## Configuration Files
 You will Find eveything above
-### k8s.yml
+You will find everything above.
 
 This file contains the Ansible playbook that sets up Kubernetes prerequisites and installs Kubernetes components. Below is an overview of the tasks included.
 
