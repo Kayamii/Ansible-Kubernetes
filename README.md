@@ -1,4 +1,4 @@
-code from https://github.com/ChristianLempa/boilerplates/blob/main/ansible/kubernetes/README.md
+
 # Kubernetes Ansible Setup
 ## Getting Started
 
@@ -151,3 +151,4 @@ ansible-playbook -i inventory k8s.yml --ask-become-pass
 
 ## Conclusion
 This documentation provides a structured approach to setting up a Kubernetes cluster using Ansible. Follow the steps carefully to ensure a smooth installation process.
+code from https://github.com/ChristianLempa/boilerplates/blob/main/ansible/kubernetes/README.md
