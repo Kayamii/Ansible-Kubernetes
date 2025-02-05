@@ -100,7 +100,6 @@ The inventory file defines the nodes in the Kubernetes cluster.
 [kubernetes]
 192.168.100.97 ansible_ssh_user=master
 192.168.100.98 ansible_ssh_user=worker1
-192.168.100.99 ansible_ssh_user=controller
 
 [masters]
 192.168.100.97 ansible_ssh_user=master
