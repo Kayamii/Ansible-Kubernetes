@@ -77,6 +77,7 @@ sudo systemctl disable ufw
 ## Configuration Files
 
 ### k8s.yml
+You will Find eveything above
 This file contains the Ansible playbook that sets up Kubernetes prerequisites and installs Kubernetes components. Below is an overview of the tasks included.
 
 ```yaml
