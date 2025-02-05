@@ -39,6 +39,14 @@ This documentation provides a comprehensive guide to setting up a Kubernetes clu
 - Ansible installed on the controller node
 - SSH access between the controller and nodes
 - Basic knowledge of YAML and Ansible
+- **Three machines** with the following specifications:
+  - **2 GB RAM**
+  - **2 CPU cores**
+  - **Ubuntu Live Server** or any Ubuntu image installed
+- Ensure all machines can communicate with each other:
+  - One controller node
+  - One master node
+  - One or more worker nodes
 
 ## Installation Steps
 
@@ -92,7 +100,6 @@ sudo systemctl disable ufw
 ```
 
 ## Configuration Files
-You will Find eveything above
 You will find everything above.
 
 This file contains the Ansible playbook that sets up Kubernetes prerequisites and installs Kubernetes components. Below is an overview of the tasks included.
