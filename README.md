@@ -1,5 +1,12 @@
 # Kubernetes Ansible Setup
+## Getting Started
 
+First, clone the repository to your local machine:
+
+```bash
+git clone https://github.com/Kayamii/Ansible-Kubernetes.git
+cd Ansible-Kubernetes
+```
 ## Table of Contents
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
