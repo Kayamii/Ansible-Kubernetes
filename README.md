@@ -16,6 +16,7 @@ cd Ansible-Kubernetes
   - [Master and Worker Setup](#master-and-worker-setup)
 - [Configuration Files](#configuration-files)
   - [Config-one-by-one](#Config-one-by-one)
+  - [Config-all-in-one](#Config-all-in-one)
   - [k8s.yml](#k8syml)
   - [Inventory File](#inventory-file)
 - [Usage](#usage)
@@ -114,6 +115,8 @@ This file contains the Ansible playbook that sets up Kubernetes prerequisites an
   ansible-playbook -i inventory setup_controller.yml
   ansible-playbook -i inventory join_workers.yml
   ```
+
+#Config-all-in-one
 ```yaml
 - name: Setup Prerequisites To Install Kubernetes
   hosts: workers,masters
