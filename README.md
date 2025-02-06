@@ -116,7 +116,7 @@ This file contains the Ansible playbook that sets up Kubernetes prerequisites an
   ansible-playbook -i inventory join_workers.yml
   ```
 
-#Config-all-in-one
+### Config-all-in-one
 ```yaml
 - name: Setup Prerequisites To Install Kubernetes
   hosts: workers,masters
