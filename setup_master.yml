@@ -1,0 +1,45 @@
+---
+- name: Setup Kubernetes Master Nodes
+  hosts: masters
+  become: true
+  tasks:
+    - name: Initialize Cluster
+      ansible.builtin.shell: |
+        sudo kubeadm init --control-plane-endpoint={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }} --pod-network-cidr=10.244.0.0/16
+      register: init_cluster_output
+      changed_when: init_cluster_output.rc != 0
+
+    - name: Create .kube Directory
+      ansible.builtin.file:
+        path: /root/.kube
+        state: directory
+        mode: '0755'
+
+    - name: Copy Kubernetes Admin Config
+      ansible.builtin.copy:
+        remote_src: true
+        src: /etc/kubernetes/admin.conf
+        dest: /root/.kube/config
+        mode: '0755'
+
+    - name: Install Flannel CNI
+      ansible.builtin.shell: |
+        kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+      become: false
+      changed_when: false
+
+    - name: Generate Join Command
+      ansible.builtin.command: kubeadm token create --print-join-command
+      register: join_command
+      changed_when: false
+
+    - name: Save Join Command to Local File
+      ansible.builtin.local_action:
+        module: copy
+        content: "{{ join_command.stdout }}"
+        dest: join_command.sh
+      become: false
+
+    - name: Display Join Command
+      ansible.builtin.debug:
+        msg: "Run the following command on worker nodes: {{ join_command.stdout }}"

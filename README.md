@@ -1,4 +1,3 @@
-
 # Kubernetes Ansible Setup
 ## Getting Started
 
@@ -16,6 +15,7 @@ cd Ansible-Kubernetes
   - [Controller Setup](#controller-setup)
   - [Master and Worker Setup](#master-and-worker-setup)
 - [Configuration Files](#configuration-files)
+  - [Config-one-by-one](#Config-one-by-one)
   - [k8s.yml](#k8syml)
   - [Inventory File](#inventory-file)
 - [Usage](#usage)
@@ -106,6 +106,14 @@ You will find everything above.
 
 This file contains the Ansible playbook that sets up Kubernetes prerequisites and installs Kubernetes components. Below is an overview of the tasks included.
 
+### Config-one-by-one
+  For a modular setup, execute the scripts individually in the following order:
+
+  ```bash
+  ansible-playbook -i inventory setup_prerequisites.yml
+  ansible-playbook -i inventory setup_controller.yml
+  ansible-playbook -i inventory join_workers.yml
+  ```
 ```yaml
 - name: Setup Prerequisites To Install Kubernetes
   hosts: workers,masters

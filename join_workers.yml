@@ -1,0 +1,11 @@
+---
+- name: Join Worker Nodes
+  hosts: workers
+  become: true
+  vars:
+    node_conn_string: "{{ lookup('file', 'join_command.sh') }}"
+
+  tasks:
+    - name: Join Worker Nodes to Cluster
+      ansible.builtin.command: "{{ node_conn_string }}"
+      changed_when: false
