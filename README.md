@@ -136,15 +136,13 @@ This file contains the Ansible playbook that sets up Kubernetes prerequisites an
 The inventory file defines the nodes in the Kubernetes cluster.
 
 ```ini
-[kubernetes]
-192.168.100.97 ansible_ssh_user=master
-192.168.100.98 ansible_ssh_user=worker1
 
 [masters]
 192.168.100.97 ansible_ssh_user=master
-
+#Master_IP
 [workers]
 192.168.100.98 ansible_ssh_user=worker1
+#Worker_IP
 ```
 
 ## Usage
