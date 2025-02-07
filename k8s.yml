@@ -218,7 +218,7 @@
       ansible.builtin.pause:
         prompt: Press RETURN when you want to continue configuring the Control nodes!
 
-- name: Setup Master Nodes
+- name: Setup Controller Nodes
   gather_facts: true
   hosts: masters
   become: true
