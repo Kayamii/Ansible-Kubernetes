@@ -87,6 +87,30 @@
         echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
       changed_when: false
 
-    - name: Install Kubernetes Packages
+    - name: 14.1 Update Cache
+      ansible.builtin.apt:
+        update_cache: true
+        autoclean: true
+      tags:
+        - install_kube_packages
+
+    - name: 14.2 Remove apt lock file
+      ansible.builtin.file:
+        state: absent
+        path: "/var/lib/dpkg/lock"
+      tags:
+        - install_kube_packages
+
+    - name: 14.3 Install Required Packages
       ansible.builtin.apt:
         name: '{{ kube_packages }}'
+      tags:
+        - install_kube_packages
+
+    - name: 14.4 Hold Packages
+      ansible.builtin.dpkg_selections:
+        name: '{{ item }}'
+        selection: hold
+      with_items: '{{ kube_packages }}'
+      tags:
+        - install_kube_packages
