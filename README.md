@@ -16,7 +16,7 @@ cd Ansible-Kubernetes
   - [Master and Worker Setup](#master-and-worker-setup)
 - [Configuration Files](#configuration-files)
   - [Config-one-by-one](#Config-one-by-one)
-  - [Config-all-in-one](#Config-all-in-one)
+  - [Config-all-in-one(a problem in master_setup)](#Config-all-in-one) 
   - [k8s.yml](#k8syml)
   - [Inventory File](#inventory-file)
 - [Usage](#usage)
