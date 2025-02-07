@@ -6,6 +6,7 @@
     node_conn_string: "{{ lookup('file', 'join_command.sh') }}"
 
   tasks:
-    - name: Join Worker Nodes to Cluster
-      ansible.builtin.command: "{{ node_conn_string }}"
+    - name: 1. Add Worker Nodes To The Controller
+      ansible.builtin.command: '{{ node_conn_string }}'
       changed_when: false
+      throttle: 1

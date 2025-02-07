@@ -7,7 +7,7 @@
     kube_packages: [kubeadm, kubectl, kubelet]
 
   tasks:
-    - name: Test Reachability
+    - name: Test Reacheability
       ansible.builtin.ping:
 
     - name: Update Cache
@@ -15,77 +15,176 @@
         update_cache: true
         autoclean: true
 
-    - name: Upgrade All the Packages to the Latest
+    - name: 1. Upgrade All the Packages to the latest
       ansible.builtin.apt:
         upgrade: "full"
 
-    - name: Install Qemu-Guest-Agent
+    - name: 2. Install Qemu-Guest-Agent
       ansible.builtin.apt:
-        name: qemu-guest-agent
+        name:
+          - qemu-guest-agent
         state: present
 
-    - name: Setup a Container Runtime
+    - name: 3. Setup a Container Runtime
       ansible.builtin.apt:
-        name: containerd
+        name:
+          - containerd
         state: present
 
-    - name: Start Containerd If Stopped
+    - name: 4. Start Containerd If Stopped
       ansible.builtin.service:
         name: containerd
         state: started
 
-    - name: Create Containerd Directory
+    - name: 5. Create Containerd Directory
       ansible.builtin.file:
         path: /etc/containerd
         state: directory
         mode: '0755'
 
-    - name: Configure Containerd
+    - name: 6. Check config.toml Exists
+      ansible.builtin.stat:
+        path: /etc/containerd/config.toml
+      register: pre_file_exist_result
+
+    - name: 6.1 Delete config.toml Exists
+      ansible.builtin.file:
+        path: /etc/containerd/config.toml
+        state: absent
+      when: pre_file_exist_result.stat.exists
+
+    - name: 7. Place Default Containerd Config Inside It
       ansible.builtin.shell: |
+        set -o pipefail
         containerd config default | sudo tee /etc/containerd/config.toml
       register: output
       changed_when: output.rc != 0
+      args:
+        executable: /bin/bash
+      tags:
+        - containerd_config
 
-    - name: Disable Swap
+    - name: 7.1 Check If New config.toml Exists Now
+      ansible.builtin.stat:
+        path: /etc/containerd/config.toml
+      register: post_file_exist_result
+      tags:
+        - containerd_config
+
+    - name: 7.2 Exit The Play If config.toml Does Not Exist
+      ansible.builtin.meta: end_play
+      when: not post_file_exist_result.stat.exists
+      tags:
+        - containerd_config
+
+    - name: 8.1 Disable Swap
       ansible.builtin.command: sudo swapoff -a
       register: output
       changed_when: output.rc != 0
+      tags:
+        - disable_swap
 
-    - name: Disable Swap Permanently
+    - name: 8.2 Disable Swap permanently
       ansible.builtin.replace:
         path: /etc/fstab
         regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
         replace: '# \1'
+      tags:
+        - disable_swap
 
-    - name: Enable IPv4 Bridging
+    - name: 9. Edit config.toml
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        after: \[plugins\."io\.containerd\.grpc\.v1\.cri"\.containerd\.runtimes\.runc\.options\]
+        regexp: SystemdCgroup = false
+        replace: SystemdCgroup = true
+
+    - name: 10. Enable Ipv4 Bridging
       ansible.builtin.replace:
         path: /etc/sysctl.conf
-        regexp: '^#net\.ipv4\.ip_forward=1$'
-        replace: 'net.ipv4.ip_forward=1'
+        regexp: ^#net\.ipv4\.ip_forward=1$
+        replace: net.ipv4.ip_forward=1
 
-    - name: Reboot
+    - name: 11.1 Delete k8s Config If Exists
+      ansible.builtin.file:
+        path: /etc/modules-load.d/k8s.conf
+        state: absent
+      tags:
+        - kube_config
+
+    - name: 11.2 Add k8s.config and Edit It
+      ansible.builtin.lineinfile:
+        path: /etc/modules-load.d/k8s.conf
+        line: br_netfilter
+        create: true
+        mode: '0755'
+      tags:
+        - kube_config
+
+    - name: 12.1 Reboot
       ansible.builtin.reboot:
+      register: system_reboot
 
-    - name: Install Prerequisite Packages
+    - name: 12.2 Verify Reboot Success
+      ansible.builtin.ping:
+      when: system_reboot.rebooted
+
+    - name: 13.1 Update Cache
+      ansible.builtin.apt:
+        update_cache: true
+        autoclean: true
+      tags:
+        - install_pre_kube_packages
+
+    - name: 13.2 Remove apt lock file
+      ansible.builtin.file:
+        state: absent
+        path: "/var/lib/dpkg/lock"
+      tags:
+        - install_pre_kube_packages
+
+    - name: 13.3 Install Prerequisite Packages
       ansible.builtin.apt:
         name: '{{ kube_prereq_packages }}'
+      tags:
+        - install_pre_kube_packages
 
-    - name: Download Kubernetes APT Key
+    - name: 13.4 Remove GPG Keys If They Exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /usr/share/keyrings/kubernetes-apt-keyring.gpg
+        - /usr/share/keyrings/kubernetes-apt-keyring.gpg_armored
+      tags:
+        - install_pre_kube_packages
+
+    - name: 13.5 Download Kubernetes APT Key
       ansible.builtin.get_url:
         url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
         dest: /usr/share/keyrings/kubernetes-apt-keyring.gpg_armored
         mode: '0755'
+      tags:
+        - install_pre_kube_packages
 
-    - name: De-Armor Kubernetes APT Key
-      ansible.builtin.shell: |
-        gpg --dearmor < /usr/share/keyrings/kubernetes-apt-keyring.gpg_armored > /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    - name: 13.6 De-Armor Kubernetes APT Key
+      ansible.builtin.shell: gpg --dearmor < /usr/share/keyrings/kubernetes-apt-keyring.gpg_armored > /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      no_log: true
       args:
         creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      tags:
+        - install_pre_kube_packages
 
-    - name: Add Kubernetes APT Repository
+    - name: 13.7 Add Kubernetes APT Key
       ansible.builtin.shell: |
-        echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-      changed_when: false
+        set -o pipefail
+        echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' \ | sudo tee /etc/apt/sources.list.d/kubernetes.list 
+      register: apt_output
+      changed_when: apt_output.rc != 0
+      args:
+        executable: /bin/bash
+      tags:
+        - install_pre_kube_packages
 
     - name: 14.1 Update Cache
       ansible.builtin.apt:
@@ -112,5 +211,12 @@
         name: '{{ item }}'
         selection: hold
       with_items: '{{ kube_packages }}'
+      tags:
+        - install_kube_packages
+
+    - name: 14.5 Verify Installation
+      ansible.builtin.shell: kubeadm version
+      register: kubeadm_version
+      changed_when: false
       tags:
         - install_kube_packages
