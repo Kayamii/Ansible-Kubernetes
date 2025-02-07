@@ -88,8 +88,10 @@ Enable password authentication:
 
 ```bash
 sudo nano /etc/ssh/sshd_config
-# Add or change the line:
-PasswordAuthentication yes
+# Add or change these lines:
+PasswordAuthentication no
+PubkeyAuthentication yes
+
 ```
 
 ### Master and Worker Setup
